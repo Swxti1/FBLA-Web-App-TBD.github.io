@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">                             <!-- text encoding -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">  <!-- makes the page scale properly on phones -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- your shared stylesheet -->
+  <title>Create event</title>                        <!-- browser tab title -->
+</head>
+
+<body class="app">                                   <!-- "app" marks pages that use the sidebar layout (CSS below) -->
+  <div class="layout">                               <!-- FIXED: puts the sidebar and the content side by side -->
+    <aside class="sidebar" id="sidebar">             <!-- the left menu; the id lets JavaScript find it -->
+      <button id="toggle" aria-label="Collapse or expand menu">&#9776;</button>  <!-- the ☰ button; aria-label helps screen readers -->
+      <a href="/organizer"><span class="icon">&#127968;</span><span class="label">Home</span></a>   <!-- icon stays visible when collapsed; label gets hidden -->
+      <a href="/Oorganizations"><span class="icon">&#128101;</span><span class="label">Organizations</span></a> <!-- example link (make this route later) -->
+      <a href="/Oevents"><span class="icon">&#128197;</span><span class="label">Events</span></a>    <!-- example link (make this route later) -->
+      <a href="/Ostats"><span class="icon">&#128202;</span><span class="label">Statistics</span></a>    <!-- example link (make this route later) -->
+      <a href="/Osettings"><span class="icon">&#9881;&#65039;</span><span class="label">Settings</span></a>     <!-- links to settings page -->
+      <a href="/logout"><span class="icon">&#128682;</span><span class="label">Log out</span></a>   <!-- uses your existing /logout route -->
+    </aside>
+
+    <main class="content">                           <!-- the page's main area --> 
+        <div class="form-page">
+      <a class="back-link" href="/Oevents">&larr; Back to events</a>  <!-- ADDED: link back to the events page -->
+      <h1>Create Event</h1>                          <!-- your normal page content goes here -->
+      <p>Fill out the form below to create a new event.</p>
+      <form class="form-card" method="POST" action="/Oevents/new">
+        {% if error %}
+          <p class="form-error">{{ error }}</p>      <!-- FIXED: .form-error is the class that has styling -->
+        {% endif %}
+
+        <label for="title">Event Title:
+        <input type="text" id="title" name="title" placeholder="Enter event title" value="{{ form.get('title', '') }}" required>  <!-- FIXED: keeps what was typed -->
+        </label>
+
+        <label for="date">Event Date:
+        <input type="date" id="date" name="date" value="{{ form.get('date', '') }}" required>
+        </label>
+
+        <label for="start">Start Time:               <!-- FIXED: your route reads "start", not "time" -->
+        <input type="time" id="start" name="start" value="{{ form.get('start', '') }}" required>
+        </label>
+
+        <label for="end">End Time:                   <!-- ADDED: your route also needs "end" -->
+        <input type="time" id="end" name="end" value="{{ form.get('end', '') }}" required>
+        </label>
+
+        <label for="location">Event Location:
+        <input type="text" id="location" name="location" placeholder="Enter event location" value="{{ form.get('location', '') }}" required>
+        </label>
+
+        <label for="capacity">Volunteers needed:
+        <input type="number" id="capacity" name="capacity" min="1" placeholder="Enter number of volunteers needed" value="{{ form.get('capacity', '') }}" required>  <!-- FIXED: min=1 -->
+        </label>
+
+        <label for="description">Event Description:
+        <textarea id="description" name="description" placeholder="Enter event description" required>{{ form.get('description', '') }}</textarea>
+        </label>
+
+        <div class="form-actions">                   <!-- FIXED: lines the buttons up on the right -->
+          <a class="btn-text" href="/Oevents">Cancel</a>  <!-- FIXED: styled Cancel link -->
+          <button class="btn btn-secondary" type="submit" name="action" value="draft">Save as Draft</button>  <!-- FIXED: name+value tell your route it's a draft -->
+          <button class="btn btn-primary" type="submit" name="action" value="publish">Publish</button>  <!-- FIXED: name+value tell your route to publish -->
+        </div>                                       <!-- end of buttons -->
+      </form>
+    </div>                                         <!-- end of form-page -->
+    </main>
+  </div>                                             <!-- FIXED: end of the layout wrapper -->
+
+  <script>                                           // JavaScript goes at the END of the body so the elements already exist
+    const sidebar = document.getElementById('sidebar');   // grab the sidebar element
+    document.getElementById('toggle').addEventListener('click', () => {  // when the ☰ button is clicked...
+      sidebar.classList.toggle('collapsed');         // ...add the "collapsed" class if it's missing, remove it if it's there
+      try { localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0'); } catch (e) {}  // remember the choice in the browser
+    });
+    try { if (localStorage.getItem('sidebarCollapsed') === '1') sidebar.classList.add('collapsed'); } catch (e) {}  // on page load, restore the saved choice
+  </script>
+</body>
+</html>

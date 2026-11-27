@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    align-items: center;      /* center horizontally */
+    justify-content: center;
+    min-height: 100vh;        /* make the body as tall as the window */
+    margin: 0;
+    text-align: center;       /* center the text inside each item */
+  }
+
+  nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f8f8f8;
+            display: flex;
+            align-items: center;
+        }
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2rem;
+        }
+  input, button { padding: 6px; font-size: 1rem;}
+</style>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- loads static/style.css; add this to EVERY page -->
+    <title>Events</title>
+</head>
+
+<body class="app">                                   <!-- "app" marks pages that use the sidebar layout (CSS below) -->
+  <div class="layout">                               <!-- row container: sidebar on the left, content on the right -->
+    <aside class="sidebar" id="sidebar">             <!-- the left menu; the id lets JavaScript find it -->
+      <button id="toggle" aria-label="Collapse or expand menu">&#9776;</button>  <!-- the ☰ button; aria-label helps screen readers -->
+      <a href="/volunteer"><span class="icon">&#127968;</span><span class="label">Home</span></a>   <!-- icon stays visible when collapsed; label gets hidden -->
+      <a href="/Vorganizations"><span class="icon">&#128101;</span><span class="label">Organizations</span></a> <!-- example link (make this route later) -->
+      <a href="/Vevents"><span class="icon">&#128197;</span><span class="label">Events</span></a>    <!-- example link (make this route later) -->
+      <a href="/Vstats"><span class="icon">&#128202;</span><span class="label">Statistics</span></a>    <!-- example link (make this route later) -->
+      <a href="/Vsettings"><span class="icon">&#9881;&#65039;</span><span class="label">Settings</span></a>     <!-- links to settings page -->
+      <a href="/logout"><span class="icon">&#128682;</span><span class="label">Log out</span></a>   <!-- uses your existing /logout route -->
+    </aside>
+
+
+
+    <main class="content">                           <!-- the page's main area -->
+      <h1>Events</h1>                                <!-- page title -->
+      <p>Check out the events happening nearby!</p>  <!-- subtitle -->
+
+            <div class="section-head">                     <!-- header for the signed-up section -->
+        <h2>Events I've signed up for</h2>           <!-- section title -->
+      </div>
+      <div class="card-row">                         <!-- row of signed-up events -->
+        {% for e in my_events %}                     <!-- one card per signed-up event -->
+        <a class="event-card" href="/Vdetails/{{ e.id }}">  <!-- ADDED: same card as the bottom row -->
+          <div class="card-top">                     <!-- top row of the card -->
+            <div class="date-badge"><small>{{ e.month }}</small><strong>{{ e.day }}</strong></div>  <!-- date badge -->
+          </div>                                     <!-- end of top row -->
+          <h3>{{ e.title }}</h3>                     <!-- event name -->
+          <p>{{ e.organizer }}</p>                   <!-- who is running it -->
+          <p>{{ e.when }}</p>                        <!-- day and time -->
+          <span class="card-link">View details &rarr;</span>  <!-- looks like a link -->
+        </a>                                         <!-- end of the card -->
+        {% else %}                                   <!-- runs when the list is empty -->
+        <p>You haven't signed up for any events yet.</p>  <!-- friendly empty message -->
+        {% endfor %}                                 <!-- end of the loop -->
+      </div>                                         <!-- end of the row -->
+
+      <div class="section-head">                     <!-- RESTORED: header for the second section -->
+        <h2>Events nearby</h2>                       <!-- section title -->
+        <small>Sorted by date, soonest first</small> <!-- small grey note -->
+      </div>                                         <!-- end of section header -->
+      <div class="card-row">                         <!-- RESTORED: second scrolling row -->
+        {% for e in nearby_events %}                 <!-- RESTORED: repeat once for each event -->
+        <a class="event-card" href="/Vdetails/{{ e.id }}">              <!-- one clickable card -->
+          <div class="card-top">                     <!-- top row -->
+            <div class="date-badge"><small>{{ e.month }}</small><strong>{{ e.day }}</strong></div>  <!-- date badge -->
+          </div>
+
+          <h3>{{ e.title }}</h3>                     <!-- event name -->
+          <p>{{ e.organizer }}</p>                   <!-- who is running it -->
+          <p>{{ e.when }}</p>                        <!-- day and time -->
+          <p class="spots">{{ e.capacity - e.filled }} spots open</p>  <!-- spots left -->
+          <span class="card-link">View details &rarr;</span>  <!-- looks like a link -->
+        </a>                                         <!-- end of this card -->
+        {% else %}                                   <!-- runs only if the loop had nothing to show -->
+        <p>No events have been published yet.</p>  <!-- friendly empty message -->
+        {% endfor %}                                 <!-- end of the loop -->
+      </div>
+    </main>
+  </div>
+
+  <script>                                           <!-- JavaScript goes at the END of the body so the elements already exist -->
+    const sidebar = document.getElementById('sidebar');   // grab the sidebar element
+    document.getElementById('toggle').addEventListener('click', () => {  // when the ☰ button is clicked...
+      sidebar.classList.toggle('collapsed');         // ...add the "collapsed" class if it's missing, remove it if it's there
+      try { localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0'); } catch (e) {}  // remember the choice in the browser
+    });
+    try { if (localStorage.getItem('sidebarCollapsed') === '1') sidebar.classList.add('collapsed'); } catch (e) {}  // on page load, restore the saved choice
+  </script>
+</body>

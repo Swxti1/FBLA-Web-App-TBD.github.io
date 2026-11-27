@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    align-items: center;      /* center horizontally */
+    justify-content: center;
+    min-height: 100vh;        /* make the body as tall as the window */
+    margin: 0;
+    text-align: center;       /* center the text inside each item */
+  }
+  input, button { padding: 6px; font-size: 1rem;}
+  .error { color: red; }   
+</style>
+
+
+<head>                                               <!-- page info -->
+  <meta charset="UTF-8">                             <!-- display all characters correctly -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">  <!-- fit phone screens -->
+  <title>Yo I'm making a web app</title>             <!-- browser tab text -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- NEW: loads your CSS file; this was missing -->
+</head>
+<body>                                               <!-- one <body> only (you had two) -->
+  <div class="card">                                 <!-- the floating block -->
+    <h1>Welcome to app!</h1>                  <!-- heading -->
+    <p>I'm trying to code what I can!</p>            <!-- tagline -->
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}  <!-- login error, shown only if Python sent one -->
+
+    <h3>Login</h3>                                   <!-- section heading -->
+    <form action="/login" method="post">             <!-- the CSS makes every form vertical, so no class is needed -->
+      <input type="text" name="IGN or smthn" placeholder="Username" required>      <!-- username box -->
+      <input type="password" name="passywassy" placeholder="Password" required>    <!-- password box -->
+      <button type="submit">Submit</button>          <!-- submits the login -->
+    </form>
+
+    <h3 class="sign-title">Sign Up?</h3>                                <!-- section heading -->
+    <form action="/signup" method="get">             <!-- GET, because /signup only shows a page -->
+      <button type="submit">Create Account</button>          <!-- goes to the signup page -->
+    </form>
+  </div>                                             <!-- end of the floating block -->
+</body>
+</html>

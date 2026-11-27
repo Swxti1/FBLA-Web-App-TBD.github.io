@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- loads static/style.css; add this to EVERY page -->
+    <title>Sign-Up</title>
+</head>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    align-items: center;      /* center horizontally */
+    justify-content: center;
+    min-height: 100vh;        /* make the body as tall as the window */
+    margin: 0;
+    text-align: center;       /* center the text inside each item */
+
+  }
+  option, select { padding: 10px; font-size: 1rem;}
+  .error { color: red; }
+
+  input, button { padding: 10px; font-size: 1rem;}
+</style>
+
+
+
+
+<body>
+    <div class="card">                                 <!-- the floating block -->
+    <h1>Sign Up</h1>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    {% if message %}<p class="message">{{ message }}</p>{% endif %}
+
+    <form action="/register" method="post">
+    <input type="text" name="IGN or smthn" placeholder="Username" required>
+    <input type="password" name="passywassy" placeholder="Password" required>
+    <input type="password" name="passywassy2" placeholder="Confirm Password" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <label for="role">Select Role:</label>
+    <select name="role" required>                    <!-- name must be exactly "role" -->
+        <option value="volunteer">Volunteer</option>   <!-- value is what Python receives -->
+        <option value="organizer">Organizer</option>   <!-- second account type -->
+    </select>
+    <button type="submit">Submit</button>
+    <button type="button" onclick="window.location.href='/'">Back to Login</button>
+    </form>
+    </div>
+
+
+
+</body>
+</html>
+
+
+
+

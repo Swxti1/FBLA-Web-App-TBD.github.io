@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    align-items: center;      /* center horizontally */
+    justify-content: center;
+    min-height: 100vh;        /* make the body as tall as the window */
+    margin: 0;
+    text-align: center;       /* center the text inside each item */
+  }
+
+  nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f8f8f8;
+            display: flex;
+            align-items: center;
+        }
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2rem;
+        }
+  input, button { padding: 6px; font-size: 1rem;}
+</style>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  <!-- loads static/style.css; add this to EVERY page -->
+    <title>Events</title>
+</head>
+
+<body class="app">                                   <!-- "app" marks pages that use the sidebar layout (CSS below) -->
+  <div class="layout">                               <!-- row container: sidebar on the left, content on the right -->
+    <aside class="sidebar" id="sidebar">             <!-- the left menu; the id lets JavaScript find it -->
+      <button id="toggle" aria-label="Collapse or expand menu">&#9776;</button>  <!-- the ☰ button; aria-label helps screen readers -->
+      <a href="/organizer"><span class="icon">&#127968;</span><span class="label">Home</span></a>   <!-- icon stays visible when collapsed; label gets hidden -->
+      <a href="/Oorganizations"><span class="icon">&#128101;</span><span class="label">Organizations</span></a> <!-- example link (make this route later) -->
+      <a href="/Oevents"><span class="icon">&#128197;</span><span class="label">Events</span></a>    <!-- example link (make this route later) -->
+      <a href="/Ostats"><span class="icon">&#128202;</span><span class="label">Statistics</span></a>    <!-- example link (make this route later) -->
+      <a href="/Osettings"><span class="icon">&#9881;&#65039;</span><span class="label">Settings</span></a>     <!-- links to settings page -->
+      <a href="/logout"><span class="icon">&#128682;</span><span class="label">Log out</span></a>   <!-- uses your existing /logout route -->
+    </aside>
+
+
+
+
+
+    <main class="content">                           <!-- the page's main area -->
+      <h1>Events</h1>                                <!-- page title -->
+      <p>Create and manage your events, and see what other organizations are planning nearby.</p>  <!-- subtitle -->
+
+      <div class="section-head">                     <!-- row with the section title on the left and a note on the right -->
+        <h2>My events</h2>                           <!-- first section title -->
+        <small>Sorted by date, soonest first</small> <!-- small grey note -->
+      </div>
+
+      <div class="card-row">                         <!-- horizontally scrolling row of cards -->
+        <a class="event-card new-card" href="/Oevents/new">  <!-- the big plus card; clicking it opens the create page -->
+          <span class="plus">+</span>                <!-- the big blue circle with a plus in it -->
+          <h3>Create event</h3>                      <!-- label under the plus -->
+          <p>Start a new event for volunteers</p>    <!-- small helper text -->
+        </a>                                         <!-- end of the plus card -->
+        {% for e in my_events %}                     <!-- repeat the card below once for each of your events -->
+        <a class="event-card" href="#">              <!-- one clickable card (# for now; point it at a detail page later) -->
+
+          <div class="card-top">                     <!-- top row: date badge on the left, status on the right -->
+            <div class="date-badge">
+              <small>{{ e.month }}</small>
+              <strong>{{ e.day }}</strong>
+            </div>  <!-- "NOV" above "21" -->
+
+            <span class="pill">
+              {{ e.status|capitalize }}
+            </span>  <!-- "Published" or "Draft" -->
+
+          </div>                                     <!-- end of top row -->
+          <h3>{{ e.title }}</h3>                     <!-- event name -->
+          <p>{{ e.when }}</p>                        <!-- "Saturday · 9:00 AM – 12:00 PM" -->
+          <p>{{ e.location }}</p>                    <!-- where it is -->
+          <p>{{ e.filled }} of {{ e.capacity }} volunteers signed up</p>  <!-- sign-up count -->
+          <div class="progress">
+            <div class="progress-bar" style="width: {{ (e.filled / e.capacity * 100)|round|int }}%">
+            </div>
+          </div>  <!-- grey bar with a green fill sized by percent -->
+          <span class="card-link">Manage event &rarr;</span>  <!-- looks like a link; the whole card is the real link -->
+        </a>                                         <!-- end of this event's card -->
+        {% endfor %}                                 <!-- stop repeating -->
+      </div>                                         <!-- end of the My events row -->
+
+      <div class="section-head">                     <!-- header for the second section -->
+        <h2>Events nearby</h2>                       <!-- section title -->
+        <small>Sorted by date, soonest first</small> <!-- small grey note -->
+      </div>
+
+      <div class="card-row">                         <!-- second scrolling row -->
+        {% for e in nearby_events %}                 <!-- repeat once for each other-organizer event -->
+        <a class="event-card" href="#">              <!-- one clickable card -->
+          <div class="card-top">                     <!-- top row -->
+            <div class="date-badge"><small>{{ e.month }}</small><strong>{{ e.day }}</strong></div>  <!-- date badge -->
+          </div>        <!-- end of top row -->
+
+          <h3>{{ e.title }}</h3>                     <!-- event name -->
+          <p>{{ e.organizer }}</p>                   <!-- who is running it -->
+          <p>{{ e.when }}</p>                        <!-- day and time -->
+          <p class="spots">{{ e.capacity - e.filled }} spots open</p>  <!-- spots left -->
+          <span class="card-link">View details &rarr;</span>  <!-- looks like a link -->
+        </a>                                         <!-- end of this card -->
+        {% else %}                                   <!-- runs only if the loop had nothing to show -->
+        <p>No events from other organizations yet.</p>  <!-- friendly empty message -->
+        {% endfor %}                                 <!-- end of the loop -->
+      </div>                                         <!-- end of the nearby row -->
+    </main>
+  </div>
+
+
+
+
+
+
+  <script>                                           <!-- JavaScript goes at the END of the body so the elements already exist -->
+    const sidebar = document.getElementById('sidebar');   // grab the sidebar element
+    document.getElementById('toggle').addEventListener('click', () => {  // when the ☰ button is clicked...
+      sidebar.classList.toggle('collapsed');         // ...add the "collapsed" class if it's missing, remove it if it's there
+      try { localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0'); } catch (e) {}  // remember the choice in the browser
+    });
+    try { if (localStorage.getItem('sidebarCollapsed') === '1') sidebar.classList.add('collapsed'); } catch (e) {}  // on page load, restore the saved choice
+  </script>
+</body>
