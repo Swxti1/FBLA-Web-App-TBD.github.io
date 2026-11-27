@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {                                              /* default (light) colors */
+	color-scheme: light dark;                          /* CHANGE from "light": lets the browser also draw inputs and buttons in dark colors */
+	--ink: #26344a;                                    /* main text color */
+	--muted: #718096;                                  /* softer text color */
+	--card-bg: rgba(255, 255, 255, 0.9);               /* the floating card */
+	--content-bg: #f4f6f8;                             /* dashboard page background */
+	--sidebar-bg: #1f2937;                             /* sidebar background */
+	--sidebar-hover: #374151;                          /* sidebar link hover color */
+	--error: #b00020;                                  /* error message color */
+	--bg-image: url('meBackground.png');                 /* NEW: the light-mode picture (path is relative to this CSS file) */
+}
+
+@media (prefers-color-scheme: dark) {                /* only applies when the visitor's computer is set to dark mode */
+	:root {                                            /* redefine the same variable names */
+		--ink: #e5e7eb;                                  /* light text */
+		--muted: #a0aec0;                                /* softer light text */
+		--card-bg: rgba(30, 41, 59, 0.92);               /* dark card */
+		--content-bg: #111827;                           /* dark dashboard background */
+		--sidebar-bg: #0b1220;                           /* darker sidebar */
+		--sidebar-hover: #1f2937;                        /* hover highlight */
+		--error: #ff8a9b;                                /* lighter red, readable on dark */
+		--bg-image: url('meBackgroundDark.png');             /* NEW: the dark-mode picture (path is relative to this CSS file) */
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	min-height: 100vh;
+	margin: 0;
+	color: var(--ink);
+	background: 
+		radial-gradient(ellipse at 8% 0%, rgb(112 184 245 / 16%), transparent 32rem),
+		radial-gradient(ellipse at 95% 12%, rgb(245 169 200 / 17%), transparent 28rem),
+		var(--page);
+	font-size: 16px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+body {                                               /* the whole page (add these lines to your existing body rule) */
+  background-image: var(--bg-image);                 /* CHANGED: use whichever picture the current theme sets */
+  background-size: cover;                            /* scale the image to fill the whole window, cropping edges if needed */
+  background-position: center;                       /* keep the middle of the image in view */
+  background-repeat: no-repeat;                      /* don't tile it */
+  background-attachment: fixed;                      /* image stays put while the page scrolls */
+}
+
+.card {                                              /* the floating block: only its own appearance */
+	max-width: 420px;                                  /* never wider than 360px */
+	width: 100%;                                       /* use the available width up to that limit */
+	padding: 32px;                                     /* space between the block's edge and its contents */
+	border-radius: 16px;                               /* rounded corners */
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);         /* soft shadow so it looks like it's floating */
+	background: #4d9febe6;               /* BLOCK COLOR: blue at 90% opacity (the last number is see-through-ness) */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0 0 0.65em;
+	color: var(--ink);
+	font-family:'DM Sans', sans-serif;
+	font-weight: 800;
+	line-height: 1.2;
+}
+
+h1 {
+	font-size: clamp(2.25rem, 5vw, 3.75rem);
+	letter-spacing: -0.045em;
+}
+
+h2 {
+	font-size: clamp(1.75rem, 3vw, 2.5rem);
+	letter-spacing: -0.035em;
+}
+
+p {
+	margin: 0 0 1rem;
+	color: var(--muted);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sign-title {
+  margin-top: 28px;
+  font-size: 1.25rem;
+}
+
+.stack {                                             /* a reusable "stack things vertically" class */
+  	display: flex;                                     /* lay out the form's children with flexbox */
+  	flex-direction: column;                            /* stack them top to bottom instead of side by side */
+  	gap: 10px;                                         /* 10px of space between each item */
+}
+
+body.app { display: block; text-align: left; }       /* undo the centered-card body layout for sidebar pages */
+
+.layout { display: flex; min-height: 100vh; }        /* put the sidebar and content side by side, full window height */
+
+.sidebar {                                           /* the left menu */
+	width: 220px;                                      /* expanded width */
+	flex-shrink: 0;                                    /* don't let the content squeeze the sidebar */
+	position: sticky;                                  /* stays in place when the page scrolls... */
+	top: 0;                                            /* ...pinned to the top of the window */
+	height: 100vh;                                     /* full window height */
+	overflow: hidden;                                  /* hide anything that doesn't fit while it's narrow */
+	background: #1f2937;                               /* SIDEBAR COLOR: change this hex code */
+	color: white;                                      /* default text color */
+	transition: width 0.25s ease;                      /* animate the width change over a quarter second */
+}
+
+.sidebar.collapsed { width: 64px; }                  /* collapsed width: just enough for the icons */
+
+#toggle {                                            /* the ☰ button */
+	display: block;                                    /* take up a full row */
+	width: 100%;                                       /* stretch across the sidebar */
+	padding: 14px 20px;                                /* roomy click area */
+	background: none;                                  /* no button background */
+	border: none;                                      /* no button border */
+	color: white;                                      /* white icon */
+	font-size: 1.5rem;                                 /* make the ☰ bigger */
+	text-align: left;                                  /* keep it aligned with the icons below */
+	cursor: pointer;                                   /* hand cursor on hover */
+}
+
+.sidebar a {                                         /* each menu link */
+	display: flex;                                     /* lay the icon and label in a row */
+	align-items: center;                               /* line them up vertically */
+	gap: 12px;                                         /* space between icon and label */
+	padding: 14px 20px;                                /* roomy click area */
+	color: white;                                      /* link color */
+	text-decoration: none;                             /* remove the underline */
+	white-space: nowrap;                               /* never wrap the label onto a second line while animating */
+}
+
+.sidebar a:hover { background: #374151; }            /* lighter shade when you hover */
+
+.sidebar.collapsed .label { display: none; }         /* when collapsed, hide the text and keep only the icons */
+
+.content { flex: 1; padding: 24px; }                 /* the content fills all remaining width */
+
+@media (prefers-color-scheme: dark) {                /* applies automatically when the visitor's computer is in dark mode */
+	:root {                                            /* redefine the same variables */
+		--ink: #e5e7eb;                                  /* light text */
+		--card-bg: rgba(30, 41, 59, 0.92);               /* dark card */
+	}
+
+.card { background: var(--card-bg); }                /* was a fixed color like rgba(44, 153, 255, 0.9) */
+.error { color: var(--error); }                      /* was red */
+.sidebar { background: var(--sidebar-bg); }          /* was #1f2937 */
+.sidebar a:hover { background: var(--sidebar-hover); }  /* was a fixed hover color */
+body.app { background-color: var(--content-bg); }    /* dashboard page background */
+}
+
+
+
+/* ===== EVENTS PAGES ===== */
+.content { min-width: 0; }                           /* lets the content shrink so wide card rows scroll inside themselves instead of stretching the page */
+
+.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 32px 0 12px; }  /* title left, note right, with space above and below */
+.section-head h2 { margin: 0; font-size: 1.5rem; }   /* section title with no extra margin */
+.section-head small { color: var(--muted); }         /* grey note */
+
+.card-row { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 16px; }  /* cards in one row; scrolls sideways when there are too many */
+
+.event-card { flex: 0 0 260px; display: flex; flex-direction: column; gap: 6px; padding: 18px; }  /* fixed-width card; stack its contents vertically */
+.event-card { background: var(--card-bg); color: var(--ink); text-decoration: none; }  /* theme-aware background and text; remove link underline */
+.event-card { border: 1px solid rgba(128, 128, 128, 0.25); border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }  /* thin border, rounded corners, soft shadow */
+.event-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }  /* animate the hover effect */
+.event-card h3 { margin: 4px 0 0; font-size: 1.15rem; }  /* event name size */
+.event-card p { margin: 0; font-size: 0.9rem; }      /* detail lines: no extra space, smaller text */
+.event-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }  /* lift the card when hovered */
+
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; }  /* date badge left, status pill right */
+
+.date-badge { display: flex; flex-direction: column; align-items: center; padding: 4px 12px; border-radius: 10px; background: rgba(29, 111, 196, 0.12); color: #1d6fc4; line-height: 1.1; }  /* small blue box: month on top of day */
+.date-badge strong { font-size: 1.5rem; }            /* big day number */
+
+.pill { padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: rgba(46, 160, 67, 0.18); color: #2e7d32; }  /* small green rounded label */
+
+.spots { color: #2e7d32; font-weight: 600; }         /* "6 spots open" in green */
+
+.progress { height: 8px; border-radius: 999px; background: rgba(128, 128, 128, 0.35); overflow: hidden; margin: 4px 0; }  /* grey track for the bar */
+.progress-bar { height: 100%; background: #2e9a3e; }  /* green fill; width comes from the template */
+
+.card-link { margin-top: auto; color: #1d6fc4; font-weight: 700; }  /* pushes "Manage event" to the bottom of the card, blue */
+
+.new-card { align-items: center; justify-content: center; text-align: center; border: 2px dashed #7a93b0; background: transparent; }  /* the plus card: centered, dashed outline */
+
+.plus { display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: #1d6fc4; color: white; font-size: 3rem; }  /* big blue circle with a plus */
+
+.back-link { display: inline-block; margin-bottom: 12px; color: #1d6fc4; font-weight: 700; text-decoration: none; }  /* "Back to events" link */
+
+.form-card { margin: 0 auto; }                       /* auto side margins = horizontal middle of the page */
+.form-card { max-width: 680px; padding: 28px; gap: 16px; background: var(--card-bg); border: 1px solid rgba(128, 128, 128, 0.25); border-radius: 16px; }  /* white rounded box around the form */
+.form-card label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 0.9rem; }  /* label text above its input */
+.form-card input, .form-card textarea { padding: 10px 12px; border: 1px solid #b6c2d0; border-radius: 10px; font: inherit; background: transparent; color: var(--ink); }  /* rounded inputs that match the theme */
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }  /* fields side by side, wrapping on small screens */
+.form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }  /* buttons on the right, wrapping on phones */
+
+.btn { padding: 10px 18px; border: 2px solid #1d6fc4; border-radius: 10px; font-weight: 700; cursor: pointer; }  /* shared button shape */
+.btn-primary { background: #1d6fc4; color: white; }  /* filled blue button */
+.btn-secondary { background: transparent; color: #1d6fc4; }  /* outlined button */
+.btn-text { color: var(--muted); font-weight: 700; text-decoration: none; }  /* plain Cancel link */
+
+.form-error { margin: 0; padding: 10px 12px; border-radius: 10px; background: rgba(176, 0, 32, 0.12); color: #b00020; }  /* red message box */
+
+@media (max-width: 700px) {                          /* on phone-sized screens... */
+  .sidebar { width: 64px; }                          /* ...keep the sidebar narrow (icons only) */
+  .sidebar .label { display: none; }                 /* ...and hide the text labels */
+}
+
+.detail-card { display: flex; flex-direction: column; gap: 10px; }  /* stacks the details with space between */
+.detail-card h1, .detail-card p { margin: 0; }       /* the gap above handles the spacing */
+.detail-actions { flex-direction: row; flex-wrap: wrap; gap: 12px; }  /* the three buttons sit side by side (wrapping on phones) */
+.notice { padding: 10px 12px; border-radius: 10px; background: rgba(29, 111, 196, 0.12); color: #1d6fc4; }  /* blue status box */
